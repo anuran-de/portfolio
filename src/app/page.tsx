@@ -1,15 +1,17 @@
 import { Hero } from "@/components/hero";
+import { SelectedWork } from "@/components/work/selected-work";
 import { SectionHeader } from "@/components/section-header";
 import { SECTIONS } from "@/lib/sections";
 
-// Sections still to be built (steps 02–05). Rendered as honest numbered
-// placeholders so the doc-rail, nav anchors, and scroll logic are wired now.
-const PENDING = SECTIONS.filter((s) => !["hero"].includes(s.id));
+// Sections still to be built. Rendered as honest numbered placeholders so the
+// doc-rail, nav anchors, and scroll logic stay wired end-to-end.
+const PENDING = SECTIONS.filter((s) => !["hero", "work"].includes(s.id));
 
 export default function Home() {
   return (
     <main>
       <Hero />
+      <SelectedWork />
 
       {PENDING.map((s) => (
         <section
