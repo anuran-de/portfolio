@@ -8,11 +8,13 @@
 
 ## 1. Design Thesis
 
-A data engineer's portfolio should feel like the **thing they build**: a precise, instrumented,
+A **data + ML engineer's** portfolio should feel like the **thing they build**: a precise, instrumented,
 high-throughput system — legible under load, no decoration without function. So the site reads like a
 **living engineering document**: hairline-ruled columns, document section numbers (`00 / 01 / 02`), mono
-metadata, a persistent status rail — with **one cinematic centerpiece**: a bespoke WebGL data-pipeline that
-streams "records" through `Postgres → Spark → Delta Lake → API` in real time.
+metadata, a persistent status rail — with **two cinematic centerpieces**: a bespoke WebGL data-pipeline that
+streams "records" through `Postgres → Spark → Delta Lake → API`, and a second signature viz — the **SARA
+multi-agent RAG graph** — because the work spans both halves equally: the pipelines *and* the ML/AI systems on
+top of them (multi-agent RAG, NLP, LLM orchestration). ML gets co-equal billing, not a footnote.
 
 **Mapping the references:**
 - **mitchelleaton.com** → the *motion register* and *editorial confidence*: near-black canvas, oversized
@@ -54,7 +56,7 @@ A deliberate 3-voice system — editorial display, technical body, data mono.
 `11–13px`, `uppercase`, `letter-spacing: 0.18em`. Editorial tension = **huge display against microscopic mono**.
 
 **Two headline options (impact-led, from the resume — pick one, I'll default to A):**
-- **A.** eyebrow `DATA ENGINEER · A.P. MOLLER–MAERSK` → display: **"I build the pipelines behind the boxes that move the world."** → mono sub: *12M+ shipping records a day · 30+ global terminals · Databricks Delta Lake.*
+- **A. (CHOSEN)** eyebrow `DATA & ML ENGINEER · A.P. MOLLER–MAERSK` → display beat 1: **"I build the pipelines behind the boxes that move the world."** → display beat 2 (smaller, amber accent word): **"— and the ML systems that make sense of them."** → mono sub: *12M+ records/day on Delta Lake · multi-agent RAG at 94% accuracy · NLP that lifted dataset quality +35%.*
 - **B.** display: **"Anuran De"** → statement: **"Real-time data infrastructure for $4B+ of container operations."** → sub: *pipelines, gateways, and the RAG systems on top of them.*
 
 ## 4. Color — monochrome canvas + one signal

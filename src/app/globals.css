@@ -1,0 +1,137 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Anuran De · Portfolio — design tokens (DESIGN.md §4, §3)
+   Warm-neutral OLED dark. Monochrome canvas + one signal (amber).
+   ============================================================ */
+
+@theme {
+  /* — Canvas & surfaces — */
+  --color-void: #08090a; /* page — near-black, faint warmth */
+  --color-surface: #0f1113; /* raised spec-sheet cards */
+  --color-surface-2: #15181b; /* nested inner core / inputs */
+
+  /* — Ink — */
+  --color-text: #f2f0ea; /* warm paper white — primary */
+  --color-dim: #9ba1a6; /* muted cool grey — secondary / mono labels */
+  --color-faint: #565b61; /* faint — coordinates, colophon */
+
+  /* — The single signal — */
+  --color-signal: #e9b44c; /* SIGNAL AMBER */
+  --color-flow-hi: #f6d79a; /* pale gold — data-viz gradient top */
+
+  /* — Type roles (wired to next/font CSS vars in layout) — */
+  --font-display: var(--font-clash), "Clash Display", ui-sans-serif, system-ui,
+    sans-serif;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", monospace;
+
+  /* — Signature motion curve (DESIGN.md §7) — */
+  --ease-settle: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Hairline token — not a color utility, used in raw CSS/rings */
+:root {
+  --hairline: rgba(255, 255, 255, 0.08);
+  --signal-soft: rgba(233, 180, 76, 0.14);
+}
+
+@layer base {
+  html {
+    background: var(--color-void);
+    color: var(--color-text);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: 18px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* Selection = signal ink on ink */
+  ::selection {
+    background: var(--color-signal);
+    color: var(--color-void);
+  }
+
+  /* Amber focus ring, per accessibility spec §10 */
+  :focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+
+  /* Thin, monochrome scrollbar to match the doc aesthetic */
+  ::-webkit-scrollbar {
+    width: 9px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-void);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #23272b;
+    border-radius: 999px;
+  }
+}
+
+@layer utilities {
+  /* Mono eyebrow / label texture — the engineering-doc readout voice */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-dim);
+  }
+
+  /* Hairline rule utilities — the whole grid is drawn in these */
+  .rule-t {
+    border-top: 1px solid var(--hairline);
+  }
+  .rule-b {
+    border-bottom: 1px solid var(--hairline);
+  }
+  .rule-l {
+    border-left: 1px solid var(--hairline);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* ============================================================
+   Film-grain overlay (DESIGN.md §4) — fixed, non-interactive,
+   ~3.5% opacity. SVG fractal noise, no external asset.
+   ============================================================ */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ============================================================
+   Reduced motion — DESIGN.md §7.6 / §10.
+   All scroll-scrub & shaders drop to static, legible states.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .grain {
+    display: none;
+  }
+}
