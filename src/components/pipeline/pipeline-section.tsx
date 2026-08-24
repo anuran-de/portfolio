@@ -11,21 +11,35 @@ const PipelineInteractive = dynamic(() => import("./pipeline-interactive"), {
   ssr: false,
 });
 
-function useWebGLReady() {
+/**
+ * The interactive WebGL scrub is a wide-screen delight: the drei-Html node
+ * labels are fixed screen-size and collide on narrow portrait widths, and the
+ * particle field is wasted work on phones. Below `lg`, on no-WebGL, or with
+ * reduced-motion we serve the crisp static diagram instead.
+ */
+function useInteractiveReady() {
+  // null = undecided (SSR + first paint) → render the static fallback first.
   const [ready, setReady] = useState<boolean | null>(null);
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setReady(false);
-      return;
-    }
-    let ok = false;
-    try {
-      const c = document.createElement("canvas");
-      ok = !!(c.getContext("webgl2") || c.getContext("webgl"));
-    } catch {
-      ok = false;
-    }
-    setReady(ok);
+    const evaluate = () => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        return false;
+      }
+      if (!window.matchMedia("(min-width: 1024px)").matches) {
+        return false;
+      }
+      try {
+        const c = document.createElement("canvas");
+        return !!(c.getContext("webgl2") || c.getContext("webgl"));
+      } catch {
+        return false;
+      }
+    };
+    setReady(evaluate());
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const onChange = () => setReady(evaluate());
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
   }, []);
   return ready;
 }
@@ -42,7 +56,7 @@ export function PipelineSection() {
   const revealRef = useRef(0);
   const [activeIndex, setActiveIndex] = useState(0);
   const [pct, setPct] = useState(0);
-  const ready = useWebGLReady();
+  const ready = useInteractiveReady();
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -62,8 +76,16 @@ export function PipelineSection() {
     setActiveIndex((cur) => (cur !== idx ? idx : cur));
   });
 
+  const interactive = ready === true;
+
   return (
-    <section id="pipeline" ref={sectionRef} className="relative h-[320svh]">
+    <section
+      id="pipeline"
+      ref={sectionRef}
+      // Tall scroll track only when there's a scrub to drive; the static
+      // fallback needs no extra travel.
+      className={`relative ${interactive ? "h-[320svh]" : "min-h-[100svh]"}`}
+    >
       {/* Sticky stage */}
       <div className="sticky top-0 h-[100svh] w-full overflow-hidden">
         <SectionHeader
@@ -77,7 +99,7 @@ export function PipelineSection() {
         {/* Visual — inset to the document's left gutter so the graph clears
             the fixed doc-rail on large screens. */}
         <div className="absolute inset-0 lg:left-44">
-          {ready === true ? (
+          {interactive ? (
             <PipelineInteractive revealRef={revealRef} activeIndex={activeIndex} />
           ) : (
             <div className="flex h-full w-full items-center justify-center px-6">
