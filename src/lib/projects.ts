@@ -35,7 +35,7 @@ export const PROJECTS: Project[] = [
     internal: true,
     what: "A production multi-agent RAG pipeline that classifies and root-causes ServiceNow incidents, then routes each to the right engineer.",
     contribution:
-      "Built the agent orchestration and a hybrid retrieval architecture (Qdrant vector search + Cohere reranking) over two knowledge collections, across four incident categories.",
+      "Agent orchestration plus a hybrid retrieval path — Qdrant vector search with Cohere reranking — reading two knowledge collections across four incident categories.",
     metrics: [
       { value: "−75%", label: "Mean resolution time" },
       { value: "94%", label: "Classification accuracy" },
@@ -52,7 +52,7 @@ export const PROJECTS: Project[] = [
     internal: true,
     what: "A governed data-access layer exposing terminal and rate data to internal platforms through versioned API contracts.",
     contribution:
-      "Delivered three endpoints (TMVC, PO Invoice, Container Info) with schema validation across CDT/PP/Prod, plus an event-driven Postgres → Delta Lake rate sync with real-time change detection.",
+      "Three endpoints — TMVC, PO Invoice, Container Info — with schema validation across CDT/PP/Prod, plus an event-driven Postgres → Delta Lake rate sync that picks up changes in real time.",
     metrics: [
       { value: "50K+", label: "Requests / day" },
       { value: "10K+", label: "Rate updates / day" },
@@ -67,9 +67,9 @@ export const PROJECTS: Project[] = [
     date: "2025–26",
     role: "Data engineering",
     internal: true,
-    what: "The fleet of 10+ PySpark pipelines on Databricks Delta Lake feeding real-time freight analytics for container operations.",
+    what: "The fleet of 30+ PySpark pipelines on Databricks Delta Lake that feeds real-time freight analytics for container operations.",
     contribution:
-      "Architected and tuned enterprise-scale ingestion and dimensional models processing shipping records across every terminal, cutting end-to-end latency and underpinning downstream analytics.",
+      "Ingestion and dimensional models that carry shipping records off every terminal into the lakehouse. Reworking the ingestion path cut end-to-end latency and steadied the analytics reading downstream.",
     metrics: [
       { value: "12M+", label: "Records / day" },
       { value: "30+", label: "Global terminals" },
@@ -104,7 +104,7 @@ export const PROJECTS: Project[] = [
     sourceUrl: "https://github.com/anuran-de/TELEDOC",
     what: "A web app that turns symptom selection into AI diagnostic suggestions and medication recommendations.",
     contribution:
-      "Built the React front end and a FastAPI + LangChain service that structures model output into ranked, explainable suggestions.",
+      "A React front end over a FastAPI + LangChain service that structures model output into ranked, explainable suggestions.",
     metrics: [{ value: "MIT", label: "Open source" }],
   },
 ];

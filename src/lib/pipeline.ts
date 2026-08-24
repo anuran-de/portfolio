@@ -25,7 +25,7 @@ export type PipelineNode = {
 export const PIPELINE_NODES: PipelineNode[] = [
   { id: "postgres", name: "Postgres", role: "Source · OLTP", metric: "40+ API credentials", x: 0.0, y: 0.35 },
   { id: "cdc", name: "CDC", role: "Change Data Capture", metric: "real-time sync", x: 0.26, y: -0.4 },
-  { id: "spark", name: "PySpark · Databricks", role: "Transform", metric: "10+ pipelines", x: 0.52, y: 0.45 },
+  { id: "spark", name: "PySpark · Databricks", role: "Transform", metric: "30+ pipelines", x: 0.52, y: 0.45 },
   { id: "delta", name: "Delta Lake", role: "Lakehouse", metric: "12M+ records / day", x: 0.76, y: -0.3 },
   { id: "api", name: "API", role: "Serving · StarGate", metric: "50K req/day · <100ms P95", x: 1.0, y: 0.25 },
 ];

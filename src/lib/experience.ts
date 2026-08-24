@@ -20,8 +20,8 @@ export const EXPERIENCE: Role[] = [
     location: "Bengaluru, IN",
     internal: true,
     points: [
-      "Architected 10+ enterprise pipelines on Databricks Delta Lake processing 12M+ records/day across 30+ terminals (PySpark) — cut end-to-end latency 70%, enabling real-time analytics for $4B+ container operations.",
-      "Led the MSS Vault secrets migration: secured 40+ API credentials across CDT/PP/Prod and fixed container-tracking data-quality defects, preventing $500K+ in operational disruption.",
+      "30+ PySpark pipelines on Databricks Delta Lake move 12M+ shipping records a day out of 30+ terminals and into the tables freight analytics reads from. Reworking the ingestion path took end-to-end latency down by 70%.",
+      "Moved 40+ API credentials into MSS Vault across the CDT, PP, and Prod environments, and cleared the container-tracking data-quality defects that were feeding bad state downstream.",
     ],
   },
   {
@@ -31,8 +31,8 @@ export const EXPERIENCE: Role[] = [
     location: "Bengaluru, IN",
     internal: true,
     points: [
-      "Shipped 3 production REST APIs (OpenAPI 3.0.1) with StarGate/Apigee integration — 50K+ daily requests at sub-100ms P95 for Digital Maritime and PO Invoice teams.",
-      "Engineered an automated PostgreSQL → Delta Lake sync for real-time rate ingestion — 99.7% data consistency across distributed systems.",
+      "Three production REST APIs (OpenAPI 3.0.1) sit behind StarGate and Apigee for the Digital Maritime and PO Invoice teams — 50K+ requests a day at sub-100ms P95.",
+      "An event-driven PostgreSQL → Delta Lake sync keeps rate data current in real time, holding 99.7% consistency across the systems it spans.",
     ],
   },
   {
@@ -41,8 +41,8 @@ export const EXPERIENCE: Role[] = [
     period: "Aug 2024 — Oct 2024",
     location: "Kolkata, IN",
     points: [
-      "Reclassified 1,000+ mislabelled cases using NLP + LangChain pipelines — +35% dataset quality.",
-      "Built a crime-classification system surfacing 10 key contributing factors — −50% manual case-processing time.",
+      "NLP and LangChain pipelines relabelled 1,000+ mislabelled cases and pulled dataset quality up 35%.",
+      "A crime-classification model surfaces the 10 factors that weigh most on each case, halving the manual processing time.",
     ],
   },
 ];

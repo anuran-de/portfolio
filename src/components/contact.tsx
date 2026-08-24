@@ -20,7 +20,7 @@ export function Contact() {
     <section id="contact" className="px-6 pt-20 pb-10 sm:px-10 lg:pl-48">
       <div className="max-w-5xl">
         <SectionHeader num="05" title="CONTACT">
-          Open to data &amp; ML roles
+          Currently at Maersk · open to what&apos;s next
         </SectionHeader>
 
         {/* CTA */}
@@ -69,7 +69,7 @@ export function Contact() {
         <div className="rule-t mt-16 grid grid-cols-1 gap-4 pt-8 font-mono text-[10px] tracking-[0.14em] text-faint uppercase sm:grid-cols-3">
           <p>Typeset in Clash Display, Geist &amp; Geist Mono</p>
           <p className="sm:text-center">
-            Built with Next.js · React Three Fiber · GSAP · custom GLSL
+            Built with Next.js · React Three Fiber · Framer Motion · custom GLSL
           </p>
           <p className="sm:text-right">12.9716°N 77.5946°E · Bengaluru</p>
         </div>

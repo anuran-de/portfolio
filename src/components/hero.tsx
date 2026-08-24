@@ -32,9 +32,9 @@ const soft: Variants = {
 
 const STATS = [
   { value: "12M+", label: "Records / day" },
-  { value: "30+", label: "Global terminals" },
+  { value: "30+", label: "Pipelines running" },
   { value: "70%", label: "Latency cut" },
-  { value: "$4B+", label: "Ops enabled" },
+  { value: "50K+", label: "API req / day" },
 ];
 
 export function Hero() {
