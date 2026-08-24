@@ -1,19 +1,38 @@
 import { PIPELINE_NODES, buildEdges } from "@/lib/pipeline";
 
 /**
- * Static SVG of the same architecture (DESIGN.md §8 fallback). Rendered for
- * reduced-motion or when WebGL is unavailable — crisp and legible, never a
- * blank box. Pure geometry from the shared topology, no client JS.
+ * SVG of the same architecture (DESIGN.md §8 fallback). Serves two jobs:
+ *
+ *  - `progress` omitted → a crisp static diagram (reduced-motion / first paint).
+ *  - `progress` 0→1 → a scroll-scrubbed reveal: pipes fill amber and nodes
+ *    light as the flow reaches them. This is the mobile/tablet stand-in for the
+ *    WebGL scrub — same "scroll to move the data" payoff, no WebGL, and the
+ *    labels live inside the viewBox so they scale instead of clipping.
+ *
+ * Pure geometry from the shared topology.
  */
 const VW = 1000;
 const VH = 360;
 const PAD_X = 90;
+/** A node lights just before the flow front reaches it. */
+const LEAD = 0.03;
 
 const mapX = (x: number) => PAD_X + x * (VW - PAD_X * 2);
 const mapY = (y: number) => VH / 2 - y * (VH / 2 - 70);
 
-export function PipelineFallback({ labels = true }: { labels?: boolean }) {
+const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
+
+export function PipelineFallback({
+  labels = true,
+  progress,
+}: {
+  labels?: boolean;
+  /** 0→1 scroll position; omit for the static diagram. */
+  progress?: number;
+}) {
   const edges = buildEdges();
+  const scrubbed = progress != null;
+  const p = clamp01(progress ?? 0);
 
   return (
     <svg
@@ -22,20 +41,31 @@ export function PipelineFallback({ labels = true }: { labels?: boolean }) {
       role="img"
       aria-label="Data pipeline: Postgres to CDC to PySpark and Databricks to Delta Lake to API"
     >
-      {/* Pipes */}
+      {/* Pipes — dim base, plus a bright fill that draws in with the scroll. */}
       {edges.map((e, i) => {
         const d = `M ${mapX(e.from.x)} ${mapY(e.from.y)} C ${mapX(e.c1[0])} ${mapY(
           e.c1[1],
         )} ${mapX(e.c2[0])} ${mapY(e.c2[1])} ${mapX(e.to.x)} ${mapY(e.to.y)}`;
+        // How far the flow front has crossed this segment, in its own 0→1.
+        const span = e.to.x - e.from.x || 1;
+        const localT = scrubbed ? clamp01((p - e.from.x) / span) : 0;
         return (
-          <path
-            key={i}
-            d={d}
-            fill="none"
-            stroke="#e9b44c"
-            strokeOpacity={0.28}
-            strokeWidth={1.25}
-          />
+          <g key={i}>
+            <path d={d} fill="none" stroke="#e9b44c" strokeOpacity={0.28} strokeWidth={1.25} />
+            {scrubbed && localT > 0 && (
+              <path
+                d={d}
+                fill="none"
+                stroke="#f6d79a"
+                strokeOpacity={0.9}
+                strokeWidth={1.75}
+                strokeLinecap="round"
+                pathLength={1}
+                strokeDasharray={1}
+                strokeDashoffset={1 - localT}
+              />
+            )}
+          </g>
         );
       })}
 
@@ -46,16 +76,27 @@ export function PipelineFallback({ labels = true }: { labels?: boolean }) {
         const anchor = i === 0 ? "start" : i === PIPELINE_NODES.length - 1 ? "end" : "middle";
         const lx = i === 0 ? cx - 14 : i === PIPELINE_NODES.length - 1 ? cx + 14 : cx;
         const below = n.y >= 0;
+        const active = scrubbed ? p >= n.x - LEAD : true;
         return (
           <g key={n.id}>
-            <circle cx={cx} cy={cy} r={13} fill="none" stroke="#f6d79a" strokeOpacity={0.75} />
-            <circle cx={cx} cy={cy} r={3} fill="#f6d79a" />
+            {active && scrubbed && (
+              <circle cx={cx} cy={cy} r={18} fill="#f6d79a" fillOpacity={0.1} />
+            )}
+            <circle
+              cx={cx}
+              cy={cy}
+              r={13}
+              fill="none"
+              stroke="#f6d79a"
+              strokeOpacity={active ? 0.95 : 0.32}
+            />
+            <circle cx={cx} cy={cy} r={active ? 3.6 : 3} fill="#f6d79a" fillOpacity={active ? 1 : 0.6} />
             {labels && (
               <text
                 x={anchor === "middle" ? cx : lx}
                 y={below ? cy + 34 : cy - 24}
                 textAnchor={anchor}
-                fill="#f2f0ea"
+                fill={active ? "#f2f0ea" : "#8b9095"}
                 fontSize={13}
                 fontFamily="var(--font-mono), monospace"
                 letterSpacing="0.06em"
@@ -68,7 +109,7 @@ export function PipelineFallback({ labels = true }: { labels?: boolean }) {
                 x={anchor === "middle" ? cx : lx}
                 y={below ? cy + 50 : cy - 40}
                 textAnchor={anchor}
-                fill="#9ba1a6"
+                fill={active ? "#c8a24a" : "#6b7075"}
                 fontSize={10.5}
                 fontFamily="var(--font-mono), monospace"
                 letterSpacing="0.12em"

@@ -12,36 +12,48 @@ const PipelineInteractive = dynamic(() => import("./pipeline-interactive"), {
 });
 
 /**
- * The interactive WebGL scrub is a wide-screen delight: the drei-Html node
- * labels are fixed screen-size and collide on narrow portrait widths, and the
- * particle field is wasted work on phones. Below `lg`, on no-WebGL, or with
- * reduced-motion we serve the crisp static diagram instead.
+ * Three ways to render the pipeline, chosen at runtime:
+ *
+ *  - "interactive" — the WebGL scrub. A wide-screen delight, but the drei-Html
+ *    node labels are fixed screen-size and collide on narrow portrait widths,
+ *    so it's gated to `lg`+ with WebGL.
+ *  - "scrub" — the SVG diagram driven by the same scroll progress. The mobile /
+ *    tablet / no-WebGL stand-in: the "scroll to move the data" payoff without
+ *    WebGL, and its labels scale with the viewBox instead of clipping.
+ *  - "static" — reduced-motion: the diagram, complete, no scroll travel.
  */
-function useInteractiveReady() {
-  // null = undecided (SSR + first paint) → render the static fallback first.
-  const [ready, setReady] = useState<boolean | null>(null);
+type PipelineMode = "interactive" | "scrub" | "static";
+
+function usePipelineMode() {
+  // null = undecided (SSR + first paint) → render the static diagram first.
+  const [mode, setMode] = useState<PipelineMode | null>(null);
   useEffect(() => {
-    const evaluate = () => {
+    const evaluate = (): PipelineMode => {
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        return false;
+        return "static";
       }
-      if (!window.matchMedia("(min-width: 1024px)").matches) {
-        return false;
-      }
+      const wide = window.matchMedia("(min-width: 1024px)").matches;
+      let webgl = false;
       try {
         const c = document.createElement("canvas");
-        return !!(c.getContext("webgl2") || c.getContext("webgl"));
+        webgl = !!(c.getContext("webgl2") || c.getContext("webgl"));
       } catch {
-        return false;
+        webgl = false;
       }
+      return wide && webgl ? "interactive" : "scrub";
     };
-    setReady(evaluate());
-    const mq = window.matchMedia("(min-width: 1024px)");
-    const onChange = () => setReady(evaluate());
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
+    setMode(evaluate());
+    const mqWidth = window.matchMedia("(min-width: 1024px)");
+    const mqMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const onChange = () => setMode(evaluate());
+    mqWidth.addEventListener("change", onChange);
+    mqMotion.addEventListener("change", onChange);
+    return () => {
+      mqWidth.removeEventListener("change", onChange);
+      mqMotion.removeEventListener("change", onChange);
+    };
   }, []);
-  return ready;
+  return mode;
 }
 
 /**
@@ -56,7 +68,7 @@ export function PipelineSection() {
   const revealRef = useRef(0);
   const [activeIndex, setActiveIndex] = useState(0);
   const [pct, setPct] = useState(0);
-  const ready = useInteractiveReady();
+  const mode = usePipelineMode();
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -76,15 +88,18 @@ export function PipelineSection() {
     setActiveIndex((cur) => (cur !== idx ? idx : cur));
   });
 
-  const interactive = ready === true;
+  const interactive = mode === "interactive";
+  // Both scrub modes drive off scroll, so both want a tall track. Only
+  // reduced-motion ("static") — and the undecided first paint — stay short.
+  const scrubbed = interactive || mode === "scrub";
 
   return (
     <section
       id="pipeline"
       ref={sectionRef}
       // Tall scroll track only when there's a scrub to drive; the static
-      // fallback needs no extra travel.
-      className={`relative ${interactive ? "h-[320svh]" : "min-h-[100svh]"}`}
+      // diagram needs no extra travel.
+      className={`relative ${scrubbed ? "h-[320svh]" : "min-h-[100svh]"}`}
     >
       {/* Sticky stage */}
       <div className="sticky top-0 h-[100svh] w-full overflow-hidden">
@@ -104,7 +119,9 @@ export function PipelineSection() {
           ) : (
             <div className="flex h-full w-full items-center justify-center px-6">
               <div className="w-full max-w-4xl">
-                <PipelineFallback labels />
+                {/* Feed live scroll progress only when we're scrubbing; the
+                    static diagram gets no progress and renders complete. */}
+                <PipelineFallback labels progress={mode === "scrub" ? pct / 100 : undefined} />
               </div>
             </div>
           )}
