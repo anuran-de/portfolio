@@ -3,35 +3,14 @@ import { SelectedWork } from "@/components/work/selected-work";
 import { Experience } from "@/components/experience";
 import { Stack } from "@/components/stack";
 import { Contact } from "@/components/contact";
-import { SectionHeader } from "@/components/section-header";
-import { SECTIONS } from "@/lib/sections";
-
-// Sections still to be built, keyed by id so they slot into document order.
-const placeholder = (id: string) => {
-  const s = SECTIONS.find((x) => x.id === id)!;
-  return (
-    <section
-      id={s.id}
-      className="min-h-[70svh] px-6 py-20 sm:px-10 lg:pl-48"
-    >
-      <div className="max-w-5xl">
-        <SectionHeader num={s.num} title={s.label.toUpperCase()}>
-          in progress
-        </SectionHeader>
-        <p className="mt-10 max-w-md font-mono text-[13px] leading-relaxed text-faint">
-          Section {s.num} scaffolded. Content lands in the next build step.
-        </p>
-      </div>
-    </section>
-  );
-};
+import { PipelineSection } from "@/components/pipeline/pipeline-section";
 
 export default function Home() {
   return (
     <main>
       <Hero />
       <SelectedWork />
-      {placeholder("pipeline")}
+      <PipelineSection />
       <Experience />
       <Stack />
       <Contact />

@@ -96,12 +96,19 @@ export function Particles({
   edges,
   perEdge = 240,
   reveal = 1,
+  revealTarget,
   size = 1,
 }: {
   edges: EdgeWorld[];
   perEdge?: number;
   /** 0..1 fill for scroll-scrub; 1 = fully ambient */
   reveal?: number;
+  /**
+   * Imperative fill target for scroll-scrubbing. When provided it drives the
+   * reveal every frame without re-rendering React (the section pipes scroll
+   * progress in here); otherwise the static `reveal` prop is used.
+   */
+  revealTarget?: { current: number };
   size?: number;
 }) {
   const matRef = useRef<THREE.ShaderMaterial>(null);
@@ -170,9 +177,11 @@ export function Particles({
     if (!m) return;
     m.uniforms.uTime.value = state.clock.elapsedTime;
     m.uniforms.uPixelRatio.value = Math.min(state.gl.getPixelRatio(), 2);
-    // Ease reveal toward its target for a smooth scrub.
+    // Ease reveal toward its target for a smooth scrub. Prefer the imperative
+    // scroll target when the section supplies one.
+    const target = revealTarget ? revealTarget.current : revealRef.current;
     const u = m.uniforms.uReveal;
-    u.value += (revealRef.current - u.value) * 0.1;
+    u.value += (target - u.value) * 0.1;
   });
 
   return (

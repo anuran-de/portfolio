@@ -8,13 +8,19 @@ export function SectionHeader({
   num,
   title,
   children,
+  className,
 }: {
   num: string;
   title: string;
   children?: ReactNode;
+  className?: string;
 }) {
   return (
-    <div className="rule-t flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 pt-5">
+    <div
+      className={`rule-t flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 pt-5${
+        className ? ` ${className}` : ""
+      }`}
+    >
       <h2 className="eyebrow flex items-center gap-2 text-dim">
         <span className="text-signal">↳ {num}</span>
         <span aria-hidden>—</span>

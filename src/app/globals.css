@@ -105,6 +105,64 @@
 }
 
 /* ============================================================
+   Pipeline node labels (DESIGN.md §6.03 / §8) — mono readouts on
+   the interactive WebGL stage, rendered via drei <Html>. Dim until
+   the scroll-driven flow reaches a node, then amber; hover reveals
+   the full role + throughput.
+   ============================================================ */
+.pf-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  text-align: center;
+  user-select: none;
+  font-family: var(--font-mono);
+}
+.pf-node-name {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--color-dim);
+  transition: color 0.5s var(--ease-settle);
+}
+.pf-node.is-above {
+  flex-direction: column-reverse;
+}
+.pf-node.is-active .pf-node-name {
+  color: var(--color-flow-hi);
+}
+.pf-node-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  opacity: 0;
+  transform: translateY(4px);
+  transition:
+    opacity 0.5s var(--ease-settle),
+    transform 0.5s var(--ease-settle);
+}
+.pf-node.is-active .pf-node-detail,
+.pf-node.is-hovered .pf-node-detail {
+  opacity: 1;
+  transform: translateY(0);
+}
+.pf-node-role {
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-faint);
+}
+.pf-node.is-hovered .pf-node-role {
+  color: var(--color-signal);
+}
+.pf-node-metric {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--color-dim);
+}
+
+/* ============================================================
    Film-grain overlay (DESIGN.md §4) — fixed, non-interactive,
    ~3.5% opacity. SVG fractal noise, no external asset.
    ============================================================ */
