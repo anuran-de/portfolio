@@ -2,6 +2,7 @@ import { Hero } from "@/components/hero";
 import { SelectedWork } from "@/components/work/selected-work";
 import { Experience } from "@/components/experience";
 import { Stack } from "@/components/stack";
+import { About } from "@/components/about";
 import { Contact } from "@/components/contact";
 import { PipelineSection } from "@/components/pipeline/pipeline-section";
 
@@ -13,6 +14,7 @@ export default function Home() {
       <PipelineSection />
       <Experience />
       <Stack />
+      <About />
       <Contact />
 
       {/* Colophon (DESIGN.md §6) */}
