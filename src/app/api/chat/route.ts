@@ -46,6 +46,33 @@ function errorResponse(message: string, status: number) {
   });
 }
 
+// TEMP diagnostic: non-streaming probe to inspect the raw Groq response shape.
+export async function GET() {
+  if (!process.env.GROQ_API_KEY) return errorResponse("no key", 503);
+  const res = await fetch(GROQ_URL, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      stream: false,
+      temperature: 0.4,
+      max_tokens: MAX_OUTPUT_TOKENS,
+      reasoning_effort: "low",
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: "In one sentence, what does Anuran do at Maersk?" },
+      ],
+    }),
+  });
+  const text = await res.text();
+  return new Response(JSON.stringify({ status: res.status, body: text }), {
+    headers: { "content-type": "application/json" },
+  });
+}
+
 export async function POST(request: Request) {
   const ip =
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
