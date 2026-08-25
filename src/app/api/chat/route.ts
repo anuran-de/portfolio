@@ -11,7 +11,7 @@ import { SYSTEM_PROMPT } from "@/lib/assistant-context";
  */
 
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-const MODEL = process.env.GROQ_MODEL ?? "llama-3.3-70b-versatile";
+const MODEL = process.env.GROQ_MODEL ?? "openai/gpt-oss-120b";
 
 // Input caps
 const MAX_MESSAGES = 12; // trailing turns kept
@@ -39,19 +39,6 @@ function rateLimited(ip: string): boolean {
 function errorResponse(message: string, status: number) {
   return new Response(JSON.stringify({ error: message }), {
     status,
-    headers: { "content-type": "application/json" },
-  });
-}
-
-// TEMP diagnostic: list models this key can access. Removed after model fix.
-export async function GET() {
-  if (!process.env.GROQ_API_KEY) return errorResponse("no key", 503);
-  const res = await fetch("https://api.groq.com/openai/v1/models", {
-    headers: { authorization: `Bearer ${process.env.GROQ_API_KEY}` },
-  });
-  const json = (await res.json()) as { data?: { id: string }[] };
-  const ids = (json.data ?? []).map((m) => m.id).sort();
-  return new Response(JSON.stringify({ ids }), {
     headers: { "content-type": "application/json" },
   });
 }
