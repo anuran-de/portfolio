@@ -43,6 +43,19 @@ function errorResponse(message: string, status: number) {
   });
 }
 
+// TEMP diagnostic: list models this key can access. Removed after model fix.
+export async function GET() {
+  if (!process.env.GROQ_API_KEY) return errorResponse("no key", 503);
+  const res = await fetch("https://api.groq.com/openai/v1/models", {
+    headers: { authorization: `Bearer ${process.env.GROQ_API_KEY}` },
+  });
+  const json = (await res.json()) as { data?: { id: string }[] };
+  const ids = (json.data ?? []).map((m) => m.id).sort();
+  return new Response(JSON.stringify({ ids }), {
+    headers: { "content-type": "application/json" },
+  });
+}
+
 export async function POST(request: Request) {
   const ip =
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
