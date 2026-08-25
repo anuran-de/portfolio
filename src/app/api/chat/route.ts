@@ -100,6 +100,8 @@ export async function POST(request: Request) {
   }
 
   if (!upstream.ok || !upstream.body) {
+    const detail = await upstream.text().catch(() => "<no body>");
+    console.error(`[chat] Groq upstream ${upstream.status}: ${detail.slice(0, 500)}`);
     return errorResponse("The assistant is having a moment. Try again shortly.", 502);
   }
 
