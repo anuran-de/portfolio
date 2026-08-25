@@ -24,10 +24,12 @@ function Node({
   node,
   position,
   reached,
+  onClick,
 }: {
   node: PipelineNode;
   position: THREE.Vector3;
   reached: boolean;
+  onClick: (id: string) => void;
 }) {
   const [hovered, setHovered] = useState(false);
   const ring = useMemo(() => new THREE.RingGeometry(0.16, 0.185, 48), []);
@@ -75,6 +77,10 @@ function Node({
           setHovered(false);
           document.body.style.cursor = "";
         }}
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick(node.id);
+        }}
       >
         <circleGeometry args={[0.5, 24]} />
         <meshBasicMaterial transparent opacity={0} depthWrite={false} />
@@ -112,9 +118,11 @@ function Node({
 export function InteractiveScene({
   revealRef,
   activeIndex,
+  onNodeClick,
 }: {
   revealRef: { current: number };
   activeIndex: number;
+  onNodeClick: (id: string) => void;
 }) {
   const { viewport } = useThree();
   // Keep the whole graph (plus label margins) on screen at any aspect ratio.
@@ -145,6 +153,7 @@ export function InteractiveScene({
           node={node}
           position={position}
           reached={i <= activeIndex}
+          onClick={onNodeClick}
         />
       ))}
     </group>

@@ -11,9 +11,11 @@ import { InteractiveScene } from "./interactive-scene";
 export default function PipelineInteractive({
   revealRef,
   activeIndex,
+  onNodeClick,
 }: {
   revealRef: { current: number };
   activeIndex: number;
+  onNodeClick: (id: string) => void;
 }) {
   return (
     <Canvas
@@ -22,7 +24,11 @@ export default function PipelineInteractive({
       camera={{ position: [0, 0, 12], fov: 42 }}
       style={{ width: "100%", height: "100%" }}
     >
-      <InteractiveScene revealRef={revealRef} activeIndex={activeIndex} />
+      <InteractiveScene
+        revealRef={revealRef}
+        activeIndex={activeIndex}
+        onNodeClick={onNodeClick}
+      />
     </Canvas>
   );
 }

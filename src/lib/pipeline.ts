@@ -1,33 +1,133 @@
 /**
- * Pipeline topology (DESIGN.md §8) — the single source of truth shared by the
- * WebGL scene and the static SVG fallback so both draw the *same* architecture:
+ * The journey as a pipeline (DESIGN.md §8) — the conceit of section 02: Anuran
+ * *is* the data, flowing through the stages that shaped him. School → High
+ * School → WEBEL → Maersk (Intern) → Maersk (ASE). The same topology drives the
+ * WebGL scene and the static SVG fallback so both draw the identical path, and
+ * every node carries a mini "artifact" with the story behind that stage.
  *
- *   Postgres → CDC → PySpark/Databricks → Delta Lake → API
- *
- * Numbers are real (PROFILE.md §5). Positions are authored in a normalized
- * space and mapped into 3D world units and 2D SVG coordinates by the consumers.
+ * Positions are authored in a normalized space and mapped into 3D world units
+ * and 2D SVG coordinates by the consumers.
  */
+
+export type JourneyArtifact = {
+  /** One-line headline for the artifact card */
+  headline: string;
+  /** Body — one string per paragraph */
+  body: string[];
+  /** Short keyword chips */
+  tags?: string[];
+  /** true → content not written yet; the card shows an "on the way" state */
+  placeholder?: boolean;
+};
 
 export type PipelineNode = {
   id: string;
-  /** Short display name */
+  /** Short display name on the node */
   name: string;
   /** Role / stage descriptor */
   role: string;
-  /** The real metric this stage carries */
+  /** Chronological period, e.g. "Aug — Oct 2024" */
+  period: string;
+  /** Location */
+  place: string;
+  /** Short metric shown under the node label */
   metric: string;
-  /** Normalized x across the flow, 0 (source) → 1 (serving) */
+  /** Normalized x across the flow, 0 (start) → 1 (now) */
   x: number;
   /** Normalized y offset, -1 (down) → 1 (up), 0 = centerline */
   y: number;
+  /** The story behind this stage */
+  artifact: JourneyArtifact;
 };
 
 export const PIPELINE_NODES: PipelineNode[] = [
-  { id: "postgres", name: "Postgres", role: "Source · OLTP", metric: "40+ API credentials", x: 0.0, y: 0.35 },
-  { id: "cdc", name: "CDC", role: "Change Data Capture", metric: "real-time sync", x: 0.26, y: -0.4 },
-  { id: "spark", name: "PySpark · Databricks", role: "Transform", metric: "30+ pipelines", x: 0.52, y: 0.45 },
-  { id: "delta", name: "Delta Lake", role: "Lakehouse", metric: "12M+ records / day", x: 0.76, y: -0.3 },
-  { id: "api", name: "API", role: "Serving · StarGate", metric: "50K req/day · <100ms P95", x: 1.0, y: 0.25 },
+  {
+    id: "school",
+    name: "School",
+    role: "Where it started",
+    period: "",
+    place: "",
+    metric: "",
+    x: 0.0,
+    y: 0.35,
+    artifact: {
+      headline: "",
+      body: [],
+      placeholder: true,
+    },
+  },
+  {
+    id: "high-school",
+    name: "High School",
+    role: "Finding the thread",
+    period: "",
+    place: "",
+    metric: "",
+    x: 0.26,
+    y: -0.4,
+    artifact: {
+      headline: "",
+      body: [],
+      placeholder: true,
+    },
+  },
+  {
+    id: "webel",
+    name: "WEBEL",
+    role: "Data Science & ML Intern",
+    period: "Aug — Oct 2024",
+    place: "Kolkata, IN",
+    metric: "2024 · Kolkata",
+    x: 0.52,
+    y: 0.45,
+    artifact: {
+      headline: "First taste of ML in production — for the Govt. of West Bengal.",
+      body: [
+        "WEBEL is the West Bengal Electronics Industry Development Corporation, the state's technology arm. The internship put me on a real caseload rather than a toy dataset.",
+        "I built NLP and LangChain pipelines that relabelled 1,000+ mislabelled cases and pulled dataset quality up 35%.",
+        "Then a crime-classification model that surfaces the 10 factors weighing most on each case — which halved the team's manual processing time.",
+      ],
+      tags: ["NLP", "LangChain", "Classification", "Govt. of West Bengal"],
+    },
+  },
+  {
+    id: "maersk-intern",
+    name: "Maersk",
+    role: "Software Engineer Intern",
+    period: "Jul 2025 — Jul 2026",
+    place: "Bengaluru, IN",
+    metric: "Intern · 2025",
+    x: 0.76,
+    y: -0.3,
+    artifact: {
+      headline: "A year building the API surface behind Maersk's maritime platforms.",
+      body: [
+        "Three production REST APIs (OpenAPI 3.0.1) that sit behind StarGate and Apigee for the Digital Maritime and PO Invoice teams — serving 50K+ requests a day at sub-100ms P95.",
+        "An event-driven PostgreSQL → Delta Lake sync that keeps rate data current in real time, holding 99.7% consistency across the systems it spans.",
+        "This is where the data-engineering work started to compound — the intern APIs became the plumbing the analytics later rode on.",
+      ],
+      tags: ["FastAPI", "OpenAPI", "StarGate / Apigee", "PostgreSQL → Delta"],
+    },
+  },
+  {
+    id: "maersk-ase",
+    name: "Maersk",
+    role: "Associate Software Engineer",
+    period: "Jul 2026 — Present",
+    place: "Bengaluru, IN",
+    metric: "ASE · 2026 →",
+    x: 1.0,
+    y: 0.25,
+    artifact: {
+      headline: "Where I am now — moving 12M+ shipping records a day.",
+      body: [
+        "30+ PySpark pipelines on Databricks Delta Lake move 12M+ shipping records a day out of 30+ terminals and into the tables freight analytics reads from. Reworking the ingestion path took end-to-end latency down 70%.",
+        "Moved 40+ API credentials into MSS Vault across the CDT, PP, and Prod environments, and cleared the container-tracking data-quality defects that were feeding bad state downstream.",
+        "Same company, bigger blast radius — from building endpoints to owning the pipelines the business runs on.",
+      ],
+      tags: ["PySpark", "Databricks", "Delta Lake", "MSS Vault"],
+    },
+  },
 ];
 
 /** One flow segment between two consecutive nodes, as a cubic bezier. */

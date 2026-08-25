@@ -25,21 +25,25 @@ const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 export function PipelineFallback({
   labels = true,
   progress,
+  onNodeClick,
 }: {
   labels?: boolean;
   /** 0→1 scroll position; omit for the static diagram. */
   progress?: number;
+  /** When set, each node becomes a button opening its journey artifact. */
+  onNodeClick?: (id: string) => void;
 }) {
   const edges = buildEdges();
   const scrubbed = progress != null;
   const p = clamp01(progress ?? 0);
+  const interactive = onNodeClick != null;
 
   return (
     <svg
       viewBox={`0 0 ${VW} ${VH}`}
       className="h-full w-full"
       role="img"
-      aria-label="Data pipeline: Postgres to CDC to PySpark and Databricks to Delta Lake to API"
+      aria-label="Career journey: School to High School to WEBEL to Maersk Intern to Associate Software Engineer"
     >
       {/* Pipes — dim base, plus a bright fill that draws in with the scroll. */}
       {edges.map((e, i) => {
@@ -82,6 +86,18 @@ export function PipelineFallback({
             {active && scrubbed && (
               <circle cx={cx} cy={cy} r={18} fill="#f6d79a" fillOpacity={0.1} />
             )}
+            {/* Faint reachable-ring so the node reads as tappable */}
+            {interactive && (
+              <circle
+                cx={cx}
+                cy={cy}
+                r={22}
+                fill="none"
+                stroke="#e9b44c"
+                strokeOpacity={active ? 0.22 : 0.12}
+                strokeDasharray="2 4"
+              />
+            )}
             <circle
               cx={cx}
               cy={cy}
@@ -116,6 +132,27 @@ export function PipelineFallback({
               >
                 {n.metric.toUpperCase()}
               </text>
+            )}
+            {/* Invisible button — generous tap target, keyboard-focusable */}
+            {interactive && (
+              <circle
+                cx={cx}
+                cy={cy}
+                r={30}
+                fill="#000"
+                fillOpacity={0}
+                role="button"
+                tabIndex={0}
+                aria-label={`Open ${n.name}${n.period ? `, ${n.period}` : ""}`}
+                style={{ cursor: "pointer", outline: "none" }}
+                onClick={() => onNodeClick?.(n.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onNodeClick?.(n.id);
+                  }
+                }}
+              />
             )}
           </g>
         );

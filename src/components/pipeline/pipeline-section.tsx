@@ -6,6 +6,7 @@ import { useScroll, useMotionValueEvent } from "framer-motion";
 import { SectionHeader } from "@/components/section-header";
 import { PIPELINE_NODES } from "@/lib/pipeline";
 import { PipelineFallback } from "./pipeline-fallback";
+import { JourneyArtifact } from "./journey-artifact";
 
 const PipelineInteractive = dynamic(() => import("./pipeline-interactive"), {
   ssr: false,
@@ -57,18 +58,24 @@ function usePipelineMode() {
 }
 
 /**
- * 02 · The Pipeline (DESIGN.md §6.03) — the differentiator. A tall scroll track
- * with a sticky full-bleed stage: scrolling scrubs the GLSL record-stream so
- * the pipeline visibly *fills* Postgres → CDC → Spark → Delta → API, and each
- * stage lights up with its real role + throughput as the flow reaches it.
- * Reduced-motion / no-WebGL falls back to the crisp static diagram.
+ * 02 · The Pipeline (DESIGN.md §6.03) — the differentiator, reframed as the
+ * journey itself: Anuran *is* the data. A tall scroll track with a sticky
+ * full-bleed stage where scrolling scrubs the GLSL record-stream through the
+ * stages that shaped him — School → High School → WEBEL → Maersk (Intern) →
+ * Maersk (ASE). Each node lights as the flow reaches it and opens a mini
+ * "artifact" with that chapter's story when clicked. Reduced-motion / no-WebGL
+ * falls back to the crisp static diagram, still fully clickable.
  */
 export function PipelineSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const revealRef = useRef(0);
   const [activeIndex, setActiveIndex] = useState(0);
   const [pct, setPct] = useState(0);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const mode = usePipelineMode();
+
+  const selectedIndex = PIPELINE_NODES.findIndex((n) => n.id === selectedId);
+  const selectedNode = selectedIndex >= 0 ? PIPELINE_NODES[selectedIndex] : null;
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -108,20 +115,29 @@ export function PipelineSection() {
           title="THE PIPELINE"
           className="absolute top-24 right-6 left-6 z-10 sm:right-10 sm:left-10 lg:pl-48"
         >
-          Scroll to move the data
+          Scroll the timeline · tap a stage
         </SectionHeader>
 
         {/* Visual — inset to the document's left gutter so the graph clears
             the fixed doc-rail on large screens. */}
         <div className="absolute inset-0 lg:left-44">
           {interactive ? (
-            <PipelineInteractive revealRef={revealRef} activeIndex={activeIndex} />
+            <PipelineInteractive
+              revealRef={revealRef}
+              activeIndex={activeIndex}
+              onNodeClick={setSelectedId}
+            />
           ) : (
             <div className="flex h-full w-full items-center justify-center px-6">
               <div className="w-full max-w-4xl">
                 {/* Feed live scroll progress only when we're scrubbing; the
-                    static diagram gets no progress and renders complete. */}
-                <PipelineFallback labels progress={mode === "scrub" ? pct / 100 : undefined} />
+                    static diagram gets no progress and renders complete. Nodes
+                    stay clickable in every fallback mode. */}
+                <PipelineFallback
+                  labels
+                  progress={mode === "scrub" ? pct / 100 : undefined}
+                  onNodeClick={setSelectedId}
+                />
               </div>
             </div>
           )}
@@ -130,10 +146,10 @@ export function PipelineSection() {
         {/* Flow readout */}
         <div className="pointer-events-none absolute right-6 bottom-10 left-6 z-10 flex items-end justify-between gap-6 sm:right-10 sm:left-10 lg:pl-48">
           <p className="max-w-xs font-mono text-[11px] leading-relaxed tracking-[0.08em] text-faint uppercase">
-            Postgres → CDC → PySpark · Databricks → Delta Lake → API
+            School → High School → WEBEL → Maersk · Intern → ASE
           </p>
           <p className="font-mono text-[11px] tracking-[0.14em] text-dim tabular-nums">
-            <span className="text-signal">FLOW</span>{" "}
+            <span className="text-signal">PATH</span>{" "}
             {String(pct).padStart(3, "0")}%
           </p>
         </div>
@@ -146,6 +162,14 @@ export function PipelineSection() {
           />
         </div>
       </div>
+
+      {/* Mini artifact for the clicked stage */}
+      <JourneyArtifact
+        node={selectedNode}
+        index={selectedIndex < 0 ? 0 : selectedIndex}
+        total={PIPELINE_NODES.length}
+        onClose={() => setSelectedId(null)}
+      />
     </section>
   );
 }
