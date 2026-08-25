@@ -57,7 +57,7 @@ export async function GET() {
     },
     body: JSON.stringify({
       model: MODEL,
-      stream: false,
+      stream: true,
       temperature: 0.4,
       max_tokens: MAX_OUTPUT_TOKENS,
       reasoning_effort: "low",
@@ -67,8 +67,8 @@ export async function GET() {
       ],
     }),
   });
-  const text = await res.text();
-  return new Response(JSON.stringify({ status: res.status, body: text }), {
+  const raw = await res.text(); // consume the whole SSE stream as text
+  return new Response(JSON.stringify({ status: res.status, len: raw.length, raw: raw.slice(0, 4000) }), {
     headers: { "content-type": "application/json" },
   });
 }
