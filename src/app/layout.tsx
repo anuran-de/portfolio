@@ -27,16 +27,26 @@ const clashDisplay = localFont({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://anuran.dev"),
+  metadataBase: new URL("https://anuran.de"),
   title: "Anuran De — Data & ML Engineer",
   description:
     "Data & ML engineer at A.P. Moller–Maersk. Real-time pipelines moving 12M+ shipping records a day across 30+ terminals, and the ML systems that make sense of them.",
   authors: [{ name: "Anuran De" }],
+  alternates: { canonical: "/" },
   openGraph: {
     title: "Anuran De — Data & ML Engineer",
     description:
-      "Real-time data infrastructure for $4B+ of container operations — 12M+ records/day on Delta Lake, multi-agent RAG at 94% accuracy.",
+      "Real-time pipelines moving 12M+ shipping records a day across 30+ terminals — and the ML systems that make sense of them.",
+    url: "https://anuran.de",
+    siteName: "Anuran De",
+    locale: "en_US",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Anuran De — Data & ML Engineer",
+    description:
+      "Real-time pipelines moving 12M+ shipping records a day — and the ML systems that make sense of them.",
   },
 };
 
