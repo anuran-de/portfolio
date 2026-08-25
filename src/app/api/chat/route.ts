@@ -10,8 +10,11 @@ import { SYSTEM_PROMPT } from "@/lib/assistant-context";
  * error the console renders as a graceful "offline" line.
  */
 
+// Allow the streamed answer time to arrive before the platform cuts the function.
+export const maxDuration = 30;
+
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-const MODEL = process.env.GROQ_MODEL ?? "openai/gpt-oss-120b";
+const MODEL = process.env.GROQ_MODEL ?? "openai/gpt-oss-20b";
 
 // Input caps
 const MAX_MESSAGES = 12; // trailing turns kept
@@ -92,6 +95,9 @@ export async function POST(request: Request) {
         stream: true,
         temperature: 0.4,
         max_tokens: MAX_OUTPUT_TOKENS,
+        // gpt-oss models "think" before answering; keep it minimal so the
+        // answer starts streaming fast (this is factual Q&A, not hard reasoning).
+        reasoning_effort: "low",
         messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
       }),
     });
