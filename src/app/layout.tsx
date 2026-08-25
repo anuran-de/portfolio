@@ -5,6 +5,7 @@ import "./globals.css";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { MetaBar } from "@/components/chrome/meta-bar";
 import { DocRail } from "@/components/chrome/doc-rail";
+import { AssistantConsole } from "@/components/assistant/terminal-chat";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -66,6 +67,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 
         {/* Lenis weighted smooth-scroll takes over the page (§7.1) */}
         <SmoothScroll>{children}</SmoothScroll>
+
+        {/* ask.anuran — console assistant, launcher + overlay */}
+        <AssistantConsole />
       </body>
     </html>
   );
