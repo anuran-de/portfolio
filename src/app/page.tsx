@@ -1,20 +1,19 @@
-import { Hero } from "@/components/hero";
+import { Opening } from "@/components/opening";
 import { SelectedWork } from "@/components/work/selected-work";
 import { Experience } from "@/components/experience";
 import { Stack } from "@/components/stack";
-import { About } from "@/components/about";
 import { Contact } from "@/components/contact";
 import { PipelineSection } from "@/components/pipeline/pipeline-section";
 
 export default function Home() {
   return (
     <main>
-      <Hero />
+      {/* 00 · Index — hero + about as one continuous opening */}
+      <Opening />
       <SelectedWork />
       <PipelineSection />
       <Experience />
       <Stack />
-      <About />
       <Contact />
 
       {/* Colophon (DESIGN.md §6) */}

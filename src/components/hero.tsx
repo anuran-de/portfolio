@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
-import { PipelineCanvas } from "./pipeline/pipeline-canvas";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -43,21 +42,6 @@ export function Hero() {
       id="hero"
       className="relative flex min-h-svh flex-col justify-center px-6 pt-28 pb-16 sm:px-10 lg:pl-48"
     >
-      {/* Living pipeline backdrop (§8) — ambient, behind the headline, biased
-          right and masked so the type stays legible. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10 opacity-70"
-        style={{
-          maskImage:
-            "linear-gradient(90deg, transparent 4%, rgba(0,0,0,0.25) 34%, #000 72%)",
-          WebkitMaskImage:
-            "linear-gradient(90deg, transparent 4%, rgba(0,0,0,0.25) 34%, #000 72%)",
-        }}
-      >
-        <PipelineCanvas parallax />
-      </div>
-
       <motion.div
         variants={container}
         initial="hidden"

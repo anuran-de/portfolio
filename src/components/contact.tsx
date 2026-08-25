@@ -12,14 +12,14 @@ const LINKS = [
 ];
 
 /**
- * 06 · Contact / Colophon (DESIGN.md §6.06) — a specific CTA, a mono link
+ * 05 · Contact / Colophon (DESIGN.md §6.06) — a specific CTA, a mono link
  * list with an amber underline-wipe on hover, and a real colophon.
  */
 export function Contact() {
   return (
     <section id="contact" className="px-6 pt-20 pb-10 sm:px-10 lg:pl-48">
       <div className="max-w-5xl">
-        <SectionHeader num="06" title="CONTACT">
+        <SectionHeader num="05" title="CONTACT">
           Currently at Maersk · open to what&apos;s next
         </SectionHeader>
 

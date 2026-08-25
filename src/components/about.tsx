@@ -1,11 +1,12 @@
-import { SectionHeader } from "@/components/section-header";
 import { Reveal } from "@/components/reveal";
 
 /**
- * 05 · About (DESIGN.md §6) — the human beat between the technical sections and
- * the CTA. Reuses the Experience/Stack 4-8 grid so it reads as native: a mono
- * "// constants" index on the left (the engineering-doc device made true — the
- * values that don't change) beside warmly-typeset prose on the right.
+ * About (DESIGN.md §6 · 00 Index) — the second beat of the opening, a
+ * continuation of the hero rather than its own chapter. It carries no section
+ * number: the hero dissolves and this rises into the same field. Reuses the
+ * Experience/Stack 4-8 grid so it still reads as native — a mono "// constants"
+ * index (the engineering-doc device made true, the values that don't change)
+ * beside warmly-typeset prose whose lead deliberately echoes the hero's.
  */
 
 /** The constants — pulled straight from the prose, nothing invented. */
@@ -18,13 +19,9 @@ const CONSTANTS: { key: string; value: string }[] = [
 
 export function About() {
   return (
-    <section id="about" className="px-6 py-20 sm:px-10 lg:pl-48">
+    <section id="about" className="px-6 pt-10 pb-24 sm:px-10 lg:pl-48">
       <div className="max-w-5xl">
-        <SectionHeader num="05" title="ABOUT">
-          Beyond the spec
-        </SectionHeader>
-
-        <div className="rule-t grid grid-cols-1 gap-x-10 gap-y-10 py-10 lg:grid-cols-12">
+        <div className="grid grid-cols-1 gap-x-10 gap-y-10 lg:grid-cols-12">
           {/* Left: the constants — a mono spec of the things that don't change */}
           <Reveal className="lg:col-span-4">
             <p className="font-mono text-[11px] tracking-[0.14em] text-signal uppercase">
