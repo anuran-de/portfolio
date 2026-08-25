@@ -36,9 +36,6 @@ yarn-error.log*
 # vercel
 .vercel
 
-# résumé PDF — kept out of git until a web-safe version (no phone/address/LeetCode) is ready
-/public/resume.pdf
-
 # typescript
 *.tsbuildinfo
 next-env.d.ts

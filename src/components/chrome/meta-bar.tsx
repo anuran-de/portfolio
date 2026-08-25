@@ -46,16 +46,21 @@ export function MetaBar() {
           ))}
         </nav>
 
-        {/* Availability status */}
-        <div className="flex items-center gap-2 font-mono text-[11px] tracking-[0.16em] uppercase">
-          <span className="relative flex h-1.5 w-1.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-signal opacity-60" />
-            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-signal" />
+        {/* Résumé */}
+        <a
+          href="/resume.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex items-center gap-2 font-mono text-[11px] tracking-[0.16em] text-dim uppercase transition-colors hover:text-signal"
+        >
+          R&eacute;sum&eacute;
+          <span
+            aria-hidden
+            className="transition-transform duration-500 group-hover:translate-x-0.5"
+          >
+            ↗
           </span>
-          <span className="text-dim">
-            Available<span className="hidden sm:inline"> for work</span>
-          </span>
-        </div>
+        </a>
       </div>
 
       {/* Amber scroll-progress line, anchored to the bar's bottom edge */}

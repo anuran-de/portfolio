@@ -9,6 +9,7 @@ const LINKS = [
     value: "in/anuran-de",
     href: "https://www.linkedin.com/in/anuran-de-7b7083286",
   },
+  { label: "Résumé", value: "Download PDF", href: "/resume.pdf" },
 ];
 
 /**
@@ -20,7 +21,7 @@ export function Contact() {
     <section id="contact" className="px-6 pt-20 pb-10 sm:px-10 lg:pl-48">
       <div className="max-w-5xl">
         <SectionHeader num="05" title="CONTACT">
-          Currently at Maersk · open to what&apos;s next
+          Data &amp; ML Engineer · A.P. Moller–Maersk
         </SectionHeader>
 
         {/* CTA */}
@@ -37,8 +38,12 @@ export function Contact() {
             <Reveal as="li" key={l.label} delay={i * 0.05}>
               <a
                 href={l.href}
-                target={l.href.startsWith("http") ? "_blank" : undefined}
-                rel={l.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                target={l.href.startsWith("http") || l.href.endsWith(".pdf") ? "_blank" : undefined}
+                rel={
+                  l.href.startsWith("http") || l.href.endsWith(".pdf")
+                    ? "noopener noreferrer"
+                    : undefined
+                }
                 className="group rule-t flex items-baseline justify-between gap-6 py-6"
               >
                 <span className="flex items-baseline gap-5">
