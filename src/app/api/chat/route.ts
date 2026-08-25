@@ -46,33 +46,6 @@ function errorResponse(message: string, status: number) {
   });
 }
 
-// TEMP diagnostic: non-streaming probe to inspect the raw Groq response shape.
-export async function GET() {
-  if (!process.env.GROQ_API_KEY) return errorResponse("no key", 503);
-  const res = await fetch(GROQ_URL, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      stream: true,
-      temperature: 0.4,
-      max_tokens: MAX_OUTPUT_TOKENS,
-      reasoning_effort: "low",
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: "In one sentence, what does Anuran do at Maersk?" },
-      ],
-    }),
-  });
-  const raw = await res.text(); // consume the whole SSE stream as text
-  return new Response(JSON.stringify({ status: res.status, len: raw.length, raw: raw.slice(0, 4000) }), {
-    headers: { "content-type": "application/json" },
-  });
-}
-
 export async function POST(request: Request) {
   const ip =
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
@@ -138,38 +111,45 @@ export async function POST(request: Request) {
     return errorResponse("The assistant is having a moment. Try again shortly.", 502);
   }
 
-  // Re-emit Groq's SSE deltas as a plain-text token stream.
+  // Re-emit Groq's SSE deltas as a plain-text token stream. Groq's gpt-oss
+  // models stream a "reasoning" channel before the answer; we forward only
+  // delta.content. A start() push-loop (not pull) so bytes flush as they
+  // arrive rather than waiting on downstream demand.
   const decoder = new TextDecoder();
   const encoder = new TextEncoder();
   const reader = upstream.body.getReader();
-  let buffer = "";
 
   const stream = new ReadableStream<Uint8Array>({
-    async pull(controller) {
-      const { done, value } = await reader.read();
-      if (done) {
-        controller.close();
-        return;
-      }
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split("\n");
-      buffer = lines.pop() ?? ""; // keep the trailing partial line
+    async start(controller) {
+      let buffer = "";
+      try {
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() ?? ""; // keep the trailing partial line
 
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed.startsWith("data:")) continue;
-        const data = trimmed.slice(5).trim();
-        if (data === "[DONE]") {
-          controller.close();
-          return;
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed.startsWith("data:")) continue;
+            const data = trimmed.slice(5).trim();
+            if (data === "[DONE]") {
+              controller.close();
+              return;
+            }
+            try {
+              const json = JSON.parse(data);
+              const token: string | undefined = json.choices?.[0]?.delta?.content;
+              if (token) controller.enqueue(encoder.encode(token));
+            } catch {
+              // ignore keep-alive / non-JSON lines
+            }
+          }
         }
-        try {
-          const json = JSON.parse(data);
-          const token: string | undefined = json.choices?.[0]?.delta?.content;
-          if (token) controller.enqueue(encoder.encode(token));
-        } catch {
-          // ignore keep-alive / non-JSON lines
-        }
+        controller.close();
+      } catch {
+        controller.close();
       }
     },
     cancel() {
