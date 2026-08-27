@@ -6,6 +6,7 @@ import { SmoothScroll } from "@/components/smooth-scroll";
 import { MetaBar } from "@/components/chrome/meta-bar";
 import { DocRail } from "@/components/chrome/doc-rail";
 import { AssistantConsole } from "@/components/assistant/terminal-chat";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -70,6 +71,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 
         {/* ask.anuran — console assistant, launcher + overlay */}
         <AssistantConsole />
+
+        {/* Privacy-friendly page-view analytics (Vercel) */}
+        <Analytics />
       </body>
     </html>
   );
